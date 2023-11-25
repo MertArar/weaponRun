@@ -1,19 +1,42 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameObject bulletPrefab; 
+    public Transform firePoint; 
+    public float bulletForce = 70f; 
     public float forwardSpeed = 1f;
     public float horizontalSpeed = 5f;
     public float maxXPosition = 4f;
     public float minXPosition = -4f;
+    [SerializeField] TextMeshProUGUI yearText;
+    private int year = 1700;
 
+    private void Start()
+    {
+        UpdateYearText();
+    }
+
+    public void ModifyYear(int amount)
+    {
+        year += amount;
+        UpdateYearText();
+    }
+
+    void UpdateYearText()
+    {
+        yearText.text = year.ToString();
+    }
+    
     private void Update()
     {
         Movement();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            FireBullet();
+        }
     }
 
     public void Movement()
@@ -39,7 +62,13 @@ public class PlayerController : MonoBehaviour
         newPosition.x = Mathf.Clamp(newPosition.x, minXPosition, maxXPosition);
         transform.position = newPosition;
 
-        // İleri doğru hareket
-        //transform.Translate(Vector3.forward * forwardSpeed * Time.deltaTime);
+        transform.Translate(Vector3.forward * forwardSpeed * Time.deltaTime);
+    }
+
+    void FireBullet()
+    {
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        rb.AddForce(firePoint.forward * bulletForce, ForceMode.Impulse); 
     }
 }

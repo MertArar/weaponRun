@@ -1,26 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float lifetime = 3f; // Mermi ömrü (saniye cinsinden)
-
-    private void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        // Belirtilen süre sonunda mermiyi yok et
-        Destroy(gameObject, lifetime);
+        if (other.CompareTag("GreenDoor"))
+        {
+            ModifyYear(100); // Yeşil kapıya çarparsa yılı artır
+            Destroy(gameObject); // Mermiyi yok et
+        }
+        else if (other.CompareTag("RedDoor"))
+        {
+            ModifyYear(-100); // Kırmızı kapıya çarparsa yılı azalt
+            Destroy(gameObject); // Mermiyi yok et
+        }
     }
 
-    void OnTriggerEnter(Collider other)
+    void ModifyYear(int amount)
     {
-        // Mermi başka bir nesneyle temas ettiğinde
-        // Burada gerekirse çarpışma işlemleri veya başka eylemler yapılabilir.
-        // Örnek olarak:
-        if (other.CompareTag("Enemy"))
+        PlayerController playerController = FindObjectOfType<PlayerController>();
+        if (playerController != null)
         {
-            Destroy(other.gameObject); // Çarptığı şey bir düşman ise düşmanı yok et
-            Destroy(gameObject); // Mermiyi yok et
+            playerController.ModifyYear(amount);
         }
     }
 }
