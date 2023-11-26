@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool isDead;
+    public GameManager managerGame;
     public GameObject bulletPrefab; 
     public Transform firePoint; 
     public float bulletForce = 70f; 
@@ -10,25 +13,12 @@ public class PlayerController : MonoBehaviour
     public float horizontalSpeed = 5f;
     public float maxXPosition = 4f;
     public float minXPosition = -4f;
-    [SerializeField] TextMeshProUGUI yearText;
-    private int year = 1700;
 
     private void Start()
     {
-        UpdateYearText();
+        Time.timeScale = 1;
     }
 
-    public void ModifyYear(int amount)
-    {
-        year += amount;
-        UpdateYearText();
-    }
-
-    void UpdateYearText()
-    {
-        yearText.text = year.ToString();
-    }
-    
     private void Update()
     {
         Movement();
@@ -70,5 +60,23 @@ public class PlayerController : MonoBehaviour
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
         rb.AddForce(firePoint.forward * bulletForce, ForceMode.Impulse); 
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.CompareTag(tag = "GreenDoor"))
+        {
+            managerGame.UpdateScore();
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("RedDoor"))
+        {
+            isDead = true;
+            Time.timeScale = 0;
+            
+        }
     }
 }
